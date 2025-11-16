@@ -4,12 +4,6 @@ mcp = FastMCP("IDA Domain MCP Server")
 
 
 @mcp.tool()
-async def check_connection(project_name: str) -> str:
-    """Check if the IDA plugin is running for the given project."""
-    return ""
-
-
-@mcp.tool()
 async def get_metadata(project_name: str) -> str:
     """Get metadata about the current IDB."""
     return ""

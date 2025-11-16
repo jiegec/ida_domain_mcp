@@ -5,11 +5,7 @@ if sys.version_info < (3, 11):
 
 import re
 import struct
-from urllib.parse import urlparse, parse_qs
 from typing import (
-    Any,
-    Callable,
-    get_type_hints,
     TypedDict,
     Optional,
     Annotated,
@@ -2024,3 +2020,54 @@ def data_read_string(address: Annotated[str, "Address to get string from"]) -> s
         return idaapi.get_strlit_contents(parse_address(address), -1, 0).decode("utf-8")
     except Exception as e:
         return "Error:" + str(e)
+
+
+def open_database(
+    db_path: str,
+    *,
+    auto_analysis: bool = True,
+    new_database: bool = False,
+    save_on_close: bool = False,
+) -> Database:
+    """
+    打开一个 IDA Database，并返回 db 句柄。
+
+    - auto_analysis: 是否在打开时自动分析
+    - new_database : 是否强制新建一个 .idb/.i64
+    - save_on_close: 不传 save 参数调用 db.close() 时的默认保存行为
+    """
+    ida_opts = IdaCommandOptions(
+        auto_analysis=auto_analysis,
+        new_database=new_database,
+    )
+
+    db = Database.open(
+        path=db_path,
+        args=ida_opts,
+        save_on_close=save_on_close,
+    )
+    # 这里如果打开失败会抛 DatabaseError，外层按需捕获即可  [oai_citation:3‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
+    return db
+
+
+def close_database(
+    db: Optional[Database],
+    *,
+    save: Optional[bool] = None,
+) -> None:
+    """
+    关闭一个已打开的 IDA Database。
+
+    - save=None : 使用 open() 时的 save_on_close 策略
+    - save=True : 强制保存分析结果
+    - save=False: 丢弃修改
+    """
+    if db is None:
+        return
+
+    # 防御式：有可能已经被关过
+    if hasattr(db, "is_open") and not db.is_open():
+        return
+
+    # Database.close(save) 会按文档说明执行保存/丢弃逻辑  [oai_citation:4‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
+    db.close(save=save)
