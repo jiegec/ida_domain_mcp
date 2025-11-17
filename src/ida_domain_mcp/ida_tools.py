@@ -2030,11 +2030,11 @@ def open_database(
     save_on_close: bool = False,
 ) -> Database:
     """
-    打开一个 IDA Database，并返回 db 句柄。
+    Open an IDA database and return the handle.
 
-    - auto_analysis: 是否在打开时自动分析
-    - new_database : 是否强制新建一个 .idb/.i64
-    - save_on_close: 不传 save 参数调用 db.close() 时的默认保存行为
+    - auto_analysis: whether to run auto-analysis when opening
+    - new_database : whether to force creating a new .idb/.i64
+    - save_on_close: default save behavior if db.close() is called without a save argument
     """
     ida_opts = IdaCommandOptions(
         auto_analysis=auto_analysis,
@@ -2046,7 +2046,7 @@ def open_database(
         args=ida_opts,
         save_on_close=save_on_close,
     )
-    # 这里如果打开失败会抛 DatabaseError，外层按需捕获即可  [oai_citation:3‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
+    # If opening fails a DatabaseError is raised; caller may catch as needed.  [oai_citation:3‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
     return db
 
 
@@ -2056,18 +2056,18 @@ def close_database(
     save: Optional[bool] = None,
 ) -> None:
     """
-    关闭一个已打开的 IDA Database。
+    Close an open IDA database.
 
-    - save=None : 使用 open() 时的 save_on_close 策略
-    - save=True : 强制保存分析结果
-    - save=False: 丢弃修改
+    - save=None : use the save_on_close strategy specified at open()
+    - save=True : force saving analysis results
+    - save=False : discard modifications
     """
     if db is None:
         return
 
-    # 防御式：有可能已经被关过
+    # Defensive: it may already have been closed
     if hasattr(db, "is_open") and not db.is_open():
         return
 
-    # Database.close(save) 会按文档说明执行保存/丢弃逻辑  [oai_citation:4‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
+    # Database.close(save) follows documented save/discard logic  [oai_citation:4‡ida-domain-llms-full.txt](sediment://file_000000005d2c722fb252b8f677a8064d)
     db.close(save=save)
