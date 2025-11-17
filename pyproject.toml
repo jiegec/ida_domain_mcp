@@ -15,6 +15,7 @@ license = "MIT"
 requires-python = ">=3.11"
 dependencies = [
     "ida-domain>=0.3.5",
+    "openai-agents>=0.5.1",
 ]
 
 [dependency-groups]
@@ -24,3 +25,6 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.scripts]
+ida-domain-mcp = "ida_domain_mcp.main:main"
