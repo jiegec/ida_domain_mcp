@@ -1,6 +1,6 @@
 import asyncio
 import os
-import sys
+import dotenv
 from agents import Agent, RunConfig, Runner, ModelSettings
 from agents.mcp import MCPServerStdio, MCPServerSse
 from colorama import Fore, Style
@@ -8,6 +8,8 @@ from openai import AsyncOpenAI
 
 from agents import set_tracing_disabled
 set_tracing_disabled(True)
+
+dotenv.load_dotenv()
 
 API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("OPENAI_BASE_URL")
