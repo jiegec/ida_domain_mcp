@@ -14,6 +14,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 dependencies = [
+    "dotenv>=0.9.9",
     "ida-domain>=0.3.5",
 ]
 
