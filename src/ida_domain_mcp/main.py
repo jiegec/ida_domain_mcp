@@ -17,6 +17,13 @@ def ensure_hex(address: int | str) -> str:
         address = hex(address)
     return address
 
+def ensure_int(address: int | str) -> str:
+    if isinstance(address, str):
+        if address.startswith("0x"):
+            return int(address, 16)
+        address = int(address)
+    return address
+
 def _worker(conn: Connection):
     """Child process loop hosting an IDA Database via ida_tools."""
     db = None
@@ -1184,7 +1191,7 @@ async def delete_stack_frame_variable(
 async def read_memory_bytes(
     project_name: str,
     memory_address: int | str,
-    size: int,
+    size: int | str,
 ) -> str:
     """
     Read raw bytes at a given address with a specified size.
@@ -1203,7 +1210,7 @@ async def read_memory_bytes(
 
     Returns: JSON string (often includes hex/raw representations).
     """
-    result = _call_project(project_name, "read_memory_bytes", ensure_hex(memory_address), size)
+    result = _call_project(project_name, "read_memory_bytes", ensure_hex(memory_address), ensure_int(size))
     return json.dumps(result, ensure_ascii=False)
 
 
